@@ -101,6 +101,3 @@ npm start
 3. Build the frontend: `npm run build`
 4. Deploy the backend to your preferred hosting service (e.g., Heroku, Render, etc.)
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
