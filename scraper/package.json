@@ -1,0 +1,35 @@
+{
+  "name": "scraper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "scrape:pc": "node index.js",
+    "scrape:global-keys": "node global-keys-scraper.js",
+    "scrape:offline-activation": "node region-change-scraper.js --label=Offline Activation --path=/product-category/games/offline-activation --output=offline_activation_games.json --pages=3",
+    "scrape:on-sale": "node region-change-scraper.js --label=On Sale --path=/product-category/games/on-sale --output=on_sale_games.json --pages=9",
+    "scrape:steam-epic-region-change": "node region-change-scraper.js --label=Steam/Epic Region Change --path=/product-category/games/steam-epic-region-change --output=region_change_games.json --pages=3",
+    "scrape:gift-cards": "node gift-cards-scraper.js",
+    "scrape:in-game-points": "node in-game-points-scraper.js",
+    "scrape:region-change": "node region-change-scraper.js",
+    "scrape:subscriptions": "node subscription-scraper.js",
+    "scrape:running-offers": "node running-offers-scraper.js",
+    "scrape": "npm run scrape:pc && npm run scrape:global-keys && npm run scrape:offline-activation && npm run scrape:on-sale && npm run scrape:steam-epic-region-change && npm run validate:data",
+    "process:games": "node processGames.js",
+    "convert:cad": "node convert-bdt-to-cad.js",
+    "update:prices": "node update-price-fields.js",
+    "validate:data": "node validate-data.js",
+    "test": "npm run validate:data"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "axios": "^1.10.0",
+    "cheerio": "^1.1.0",
+    "dotenv": "^17.2.0",
+    "fs": "^0.0.1-security",
+    "uuid": "^11.1.0"
+  }
+}
