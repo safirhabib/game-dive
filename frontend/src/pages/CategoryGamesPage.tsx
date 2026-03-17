@@ -4,7 +4,7 @@ import { Loader2 } from 'lucide-react';
 import GameCard from '../components/GameCard';
 import { Game } from '../types';
 
-import { API_BASE } from '../config';
+import { apiFetch } from '../utils/apiFetch';
 
 const SECTION_MAP: Record<string, { title: string; category: string }> = {
   'pc-games': { title: 'PC Games', category: 'PC Games' },
@@ -40,8 +40,8 @@ function CategoryGamesPage({ onAddToCart }: CategoryGamesPageProps) {
     async function load() {
       setLoading(true);
       try {
-        const res = await fetch(
-          `${API_BASE}/games/category/${encodeURIComponent(cfg.category)}?limit=12&page=${page}`
+        const res = await apiFetch(
+          `/games/category/${encodeURIComponent(cfg.category)}?limit=12&page=${page}`
         );
         const data = await res.json();
         const items = Array.isArray(data.data) ? data.data : [];

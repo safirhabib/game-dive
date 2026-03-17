@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Loader2, Check, Clock } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { API_BASE, SUPPORT_EMAIL } from '../config';
+import { SUPPORT_EMAIL } from '../config';
+import { apiFetch } from '../utils/apiFetch';
 
 interface Order {
   _id: string;
@@ -29,7 +30,7 @@ function CheckoutSuccessPage() {
     let cancelled = false;
     async function load() {
       try {
-        const res = await fetch(`${API_BASE}/orders/by-session/${encodeURIComponent(sessionId)}`, {
+        const res = await apiFetch(`/orders/by-session/${encodeURIComponent(sessionId)}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         const data = await res.json();

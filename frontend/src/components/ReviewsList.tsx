@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { API_BASE } from '../config';
 import { Game } from '../types';
 import { Review } from '../types';
+import { apiFetch } from '../utils/apiFetch';
 
 interface ReviewsListProps {
   game: Game;
@@ -16,8 +15,9 @@ const ReviewsList: React.FC<ReviewsListProps> = ({ game }) => {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const response = await axios.get(`${API_BASE}/games/${game._id}/reviews`);
-        setReviews(response.data.data);
+        const res = await apiFetch(`/games/${game._id}/reviews`);
+        const data = await res.json();
+        setReviews(Array.isArray(data?.data) ? data.data : []);
         setLoading(false);
       } catch (err) {
         setError('Failed to fetch reviews. Please try again.');

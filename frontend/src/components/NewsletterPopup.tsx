@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
-import { API_BASE } from '../config';
+import { apiFetch } from '../utils/apiFetch';
 
 export const NewsletterPopup = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -26,11 +26,8 @@ export const NewsletterPopup = () => {
     setStatus('loading');
     
     try {
-      const response = await fetch(`${API_BASE}/newsletter/subscribe`, {
+      const response = await apiFetch('/newsletter/subscribe', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({
           email: email,
         }),

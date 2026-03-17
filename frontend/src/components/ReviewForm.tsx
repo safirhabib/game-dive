@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-import { API_BASE } from '../config';
 import { Game } from '../types';
 import { useAuth } from '../context/AuthContext';
+import { apiFetch } from '../utils/apiFetch';
 
 interface ReviewFormProps {
   game: Game;
@@ -20,19 +19,20 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ game, onReviewAdded }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${API_BASE}/games/${game._id}/reviews`, {
-        title,
-        text,
-        rating,
-      }, {
+      const res = await apiFetch(`/games/${game._id}/reviews`, {
+        method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
         },
-        withCredentials: true
+        body: JSON.stringify({
+          title,
+          text,
+          rating,
+        }),
       });
+      const data = await res.json();
 
-      if (response.data.success) {
+      if (res.ok && data.success) {
         setSuccess(true);
         setRating(5);
         setTitle('');
@@ -40,10 +40,13 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ game, onReviewAdded }) => {
         onReviewAdded?.();
         // Clear success message after 3 seconds
         setTimeout(() => setSuccess(false), 3000);
+      } else {
+        setError(data.message || 'Failed to submit review. Please try again.');
+        setTimeout(() => setError(null), 5000);
       }
     } catch (err: any) {
-      console.error('Review submission error:', err.response?.data || err);
-      setError(err.response?.data?.message || 'Failed to submit review. Please try again.');
+      console.error('Review submission error:', err);
+      setError('Failed to submit review. Please try again.');
       // Clear error message after 5 seconds
       setTimeout(() => setError(null), 5000);
     }

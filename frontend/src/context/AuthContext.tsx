@@ -14,6 +14,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 import { API_BASE } from '../config';
+import { apiFetch } from '../utils/apiFetch';
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -26,7 +27,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       try {
         const storedToken = localStorage.getItem('token');
         if (storedToken) {
-          const response = await fetch(`${API_BASE}/auth/me`, {
+          const response = await apiFetch('/auth/me', {
             headers: {
               'Authorization': `Bearer ${storedToken}`,
             },
@@ -55,11 +56,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await fetch(`${API_BASE}/auth/login`, {
+      const response = await apiFetch('/auth/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({ email, password }),
       });
 
@@ -85,11 +83,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const register = async (username: string, email: string, password: string) => {
     try {
-      const response = await fetch(`${API_BASE}/auth/register`, {
+      const response = await apiFetch('/auth/register', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({ username, email, password }),
       });
 
@@ -118,7 +113,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setToken(null);
     setUser(null);
     // Optional: Call the backend logout endpoint if you have one
-    fetch(`${API_BASE}/auth/logout`, {
+    apiFetch('/auth/logout', {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,

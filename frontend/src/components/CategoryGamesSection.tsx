@@ -4,7 +4,7 @@ import { Loader2 } from 'lucide-react';
 import GameCard from './GameCard';
 import { Game } from '../types';
 
-import { API_BASE } from '../config';
+import { apiFetch } from '../utils/apiFetch';
 
 interface CategoryGamesSectionProps {
   title: string;
@@ -21,7 +21,9 @@ function CategoryGamesSection({ title, category, viewMorePath, onAddToCart }: Ca
     let cancelled = false;
     async function load() {
       try {
-        const res = await fetch(`${API_BASE}/games/category/${encodeURIComponent(category)}?limit=8&page=1`);
+        const res = await apiFetch(
+          `/games/category/${encodeURIComponent(category)}?limit=8&page=1`
+        );
         const data = await res.json();
         if (!cancelled && data.success) {
           setGames(Array.isArray(data.data) ? data.data : []);

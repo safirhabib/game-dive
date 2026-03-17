@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Loader2, ArrowLeft, Check } from 'lucide-react';
-import { API_BASE } from '../config';
 import { Game } from '../types';
 import ReviewForm from './ReviewForm';
 import ReviewsList from './ReviewsList';
 import { useAuth } from '../context/AuthContext';
 import { proxyImageUrl } from '../utils/imageProxy';
+import { apiFetch } from '../utils/apiFetch';
 
 interface GameDetailProps {
   onAddToCart: (game: Game) => void;
@@ -31,7 +31,7 @@ export const GameDetail = ({ onAddToCart }: GameDetailProps) => {
       }
       try {
         setLoading(true);
-        const res = await fetch(`${API_BASE}/games/${encodeURIComponent(id)}`);
+        const res = await apiFetch(`/games/${encodeURIComponent(id)}`);
         const data = await res.json();
         if (!res.ok || !data.success || !data.data) {
           throw new Error('Game not found');

@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { Loader2, Check, Clock } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { SUPPORT_EMAIL } from '../config';
+import { apiFetch } from '../utils/apiFetch';
 
 interface OrderItem {
   game: { _id: string; title: string; slug: string; imageUrl: string } | null;
@@ -24,8 +25,6 @@ interface Order {
   adminMessageSentAt?: string;
 }
 
-import { API_BASE } from '../config';
-
 function OrderDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { token } = useAuth();
@@ -39,7 +38,7 @@ function OrderDetailPage() {
     async function load() {
       try {
         setLoading(true);
-        const res = await fetch(`${API_BASE}/orders/${id}`, {
+        const res = await apiFetch(`/orders/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         const data = await res.json();

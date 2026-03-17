@@ -64,7 +64,12 @@ app.use(cookieParser());
 app.use(mongoSanitize());
 
 // Set security headers
-app.use(helmet());
+// Allow the frontend (different origin) to read API responses.
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' }
+  })
+);
 
 // Prevent XSS attacks
 app.use(xss());
@@ -94,10 +99,13 @@ const corsOptions = {
 // Enable CORS with specific configuration
 app.use(cors(corsOptions));
 
-// Add CORS headers for image requests
+// Only relax CORS for the image proxy endpoint (no credentials needed).
+// Do NOT set wildcard CORS globally because it conflicts with `credentials: true`.
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  if (req.path.startsWith('/api/v1/proxy/image/')) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  }
   next();
 });
 

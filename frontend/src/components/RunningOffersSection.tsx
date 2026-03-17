@@ -4,7 +4,7 @@ import { Loader2, Tag } from 'lucide-react';
 import GameCard from './GameCard';
 import { Game } from '../types';
 
-import { API_BASE } from '../config';
+import { apiFetch } from '../utils/apiFetch';
 
 export interface RunningOfferItem {
   _id: string;
@@ -35,7 +35,7 @@ function RunningOffersSection({ onAddToCart }: RunningOffersSectionProps) {
     let cancelled = false;
     async function fetchRunningOffers() {
       try {
-        const res = await fetch(`${API_BASE}/games/running-offers?limit=12`);
+        const res = await apiFetch('/games/running-offers?limit=12');
         const data = await res.json();
         if (!cancelled && data.success && Array.isArray(data.data)) {
           setItems(data.data);

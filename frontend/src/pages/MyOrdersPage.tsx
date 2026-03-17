@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { apiFetch } from '../utils/apiFetch';
 
 interface OrderItem {
   game: { _id: string; title: string; slug: string; imageUrl: string } | null;
@@ -23,8 +24,6 @@ interface Order {
   adminMessageSentAt?: string;
 }
 
-import { API_BASE } from '../config';
-
 function MyOrdersPage() {
   const { token } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
@@ -37,7 +36,7 @@ function MyOrdersPage() {
     async function load() {
       try {
         setLoading(true);
-        const res = await fetch(`${API_BASE}/orders/mine`, {
+        const res = await apiFetch('/orders/mine', {
           headers: { Authorization: `Bearer ${token}` }
         });
         const data = await res.json();

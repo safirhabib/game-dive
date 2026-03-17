@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import { API_BASE, PAYPAL_CLIENT_ID } from '../config';
 import { useAuth } from '../context/AuthContext';
 import { CartItem } from '../types';
+import { apiFetch } from '../utils/apiFetch';
 
 declare global {
   interface Window {
@@ -76,10 +77,9 @@ function Cart({ cartItems: items, onUpdateQuantity, onRemove: onRemoveItem }: Ca
     window.paypal
       .Buttons({
         createOrder: async () => {
-          const res = await fetch(`${API_BASE}/payments/create-order`, {
+          const res = await apiFetch('/payments/create-order', {
             method: 'POST',
             headers: {
-              'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify({ items: cartPayloadRef.current }),
@@ -92,10 +92,9 @@ function Cart({ cartItems: items, onUpdateQuantity, onRemove: onRemoveItem }: Ca
         },
         onApprove: async (data) => {
           try {
-            const res = await fetch(`${API_BASE}/payments/capture`, {
+            const res = await apiFetch('/payments/capture', {
               method: 'POST',
               headers: {
-                'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`,
               },
               body: JSON.stringify({ orderId: data.orderID }),

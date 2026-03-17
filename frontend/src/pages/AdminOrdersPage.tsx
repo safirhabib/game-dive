@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { apiFetch } from '../utils/apiFetch';
 
 interface OrderItem {
   game: {
@@ -28,7 +29,6 @@ interface Order {
   adminMessageSentAt?: string;
 }
 
-import { API_BASE } from '../config';
 
 function AdminOrdersPage() {
   const { token, user } = useAuth();
@@ -46,7 +46,7 @@ function AdminOrdersPage() {
     async function load() {
       try {
         setLoading(true);
-        const res = await fetch(`${API_BASE}/orders`, {
+        const res = await apiFetch('/orders', {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -77,11 +77,10 @@ function AdminOrdersPage() {
     if (!token) return;
     setSendingId(orderId);
     try {
-      const res = await fetch(`${API_BASE}/orders/${orderId}/message`, {
+      const res = await apiFetch(`/orders/${orderId}/message`, {
         method: 'PATCH',
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
         },
         body: JSON.stringify({ adminMessage: body })
       });
@@ -122,11 +121,10 @@ function AdminOrdersPage() {
     if (!token) return;
     setStatusUpdatingId(orderId);
     try {
-      const res = await fetch(`${API_BASE}/orders/${orderId}/status`, {
+      const res = await apiFetch(`/orders/${orderId}/status`, {
         method: 'PATCH',
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
         },
         body: JSON.stringify({ status: newStatus })
       });
