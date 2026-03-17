@@ -24,6 +24,7 @@ import HowItWorksPage from './pages/HowItWorksPage';
 import CheckoutCancelPage from './pages/CheckoutCancelPage';
 import FAQSection from './components/FAQSection';
 import FAQPage from './pages/FAQPage';
+import WhatYouGetSection from './components/WhatYouGetSection';
 
 // Main app content that requires authentication
 const AuthenticatedApp = () => {
@@ -113,6 +114,7 @@ const AuthenticatedApp = () => {
             element={
               <>
                 <Hero />
+                <WhatYouGetSection />
                 <CategoryGamesSection
                   title="PC Games"
                   category="PC Games"
