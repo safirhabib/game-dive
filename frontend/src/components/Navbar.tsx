@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, User, Heart, ShoppingBag, Menu, X } from 'lucide-react';
+import { Search, User, Heart, ShoppingBag, Menu, X, ReceiptText, HelpCircle } from 'lucide-react';
 
 import { GameCategory, CategoryItem } from '../types';
 
@@ -88,7 +88,7 @@ const Navbar = ({ cartItemCount, user, onLogout }: NavbarProps) => {
       {/* Top Bar */}
       <div className="bg-gray-100 text-xs text-gray-600 py-1">
         <div className="container mx-auto px-4 flex justify-end space-x-6">
-          <a href="#" className="hover:text-black">Help</a>
+          <Link to="/faq" className="hover:text-black">FAQ</Link>
           {user ? (
             <button onClick={onLogout} className="hover:text-black">
               Sign Out
@@ -198,6 +198,14 @@ const Navbar = ({ cartItemCount, user, onLogout }: NavbarProps) => {
                 <Heart className="h-6 w-6" />
               </button>
               <Link
+                to="/orders"
+                className="p-2 text-gray-400 hover:text-gray-600 relative rounded-full hover:bg-gray-100"
+                aria-label="My Orders"
+                title="My Orders"
+              >
+                <ReceiptText className="h-6 w-6" />
+              </Link>
+              <Link
                 to="/cart"
                 className="p-2 text-gray-400 hover:text-gray-600 relative rounded-full hover:bg-gray-100"
               >
@@ -279,6 +287,22 @@ const Navbar = ({ cartItemCount, user, onLogout }: NavbarProps) => {
         {isOpen && (
           <div className="md:hidden bg-white border-t border-gray-200 mt-2 py-2">
             <div className="px-2 pt-2 pb-3 space-y-1">
+              <Link
+                to="/faq"
+                className="flex items-center gap-2 px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                onClick={() => setIsOpen(false)}
+              >
+                <HelpCircle className="h-5 w-5" />
+                FAQ
+              </Link>
+              <Link
+                to="/orders"
+                className="flex items-center gap-2 px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                onClick={() => setIsOpen(false)}
+              >
+                <ReceiptText className="h-5 w-5" />
+                My Orders
+              </Link>
               {categories.map((category: GameCategory) => (
                 <div key={category.name}>
                   <button

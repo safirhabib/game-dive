@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import Navbar from './components/Navbar';
@@ -21,10 +22,12 @@ import OrderDetailPage from './pages/OrderDetailPage';
 import CheckoutSuccessPage from './pages/CheckoutSuccessPage';
 import HowItWorksPage from './pages/HowItWorksPage';
 import CheckoutCancelPage from './pages/CheckoutCancelPage';
+import FAQSection from './components/FAQSection';
+import FAQPage from './pages/FAQPage';
 
 // Main app content that requires authentication
 const AuthenticatedApp = () => {
-  const { user, logout } = useAuth();
+  const { user, token, logout } = useAuth();
   const [cartItems, setCartItems] = useState<CartItem[]>(() => {
     try {
       const savedCart = localStorage.getItem('cart');
@@ -49,7 +52,17 @@ const AuthenticatedApp = () => {
     localStorage.setItem('cart', JSON.stringify(cartItems));
   }, [cartItems]);
 
+  const clearCart = () => {
+    setCartItems([]);
+    localStorage.setItem('cart', JSON.stringify([]));
+  };
+
   const addToCart = (game: Game) => {
+    if (!token) {
+      toast.error('Please sign in to add items to your cart.');
+      window.location.assign('/login');
+      return;
+    }
     setCartItems((prevItems: CartItem[]) => {
       const existingItem = prevItems.find((item) => item.game._id === game._id);
       if (existingItem) {
@@ -70,6 +83,11 @@ const AuthenticatedApp = () => {
   };
 
   const updateQuantity = (gameId: string, quantity: number) => {
+    if (!token) {
+      toast.error('Please sign in to update your cart.');
+      window.location.assign('/login');
+      return;
+    }
     if (quantity <= 0) {
       removeFromCart(gameId);
       return;
@@ -125,6 +143,7 @@ const AuthenticatedApp = () => {
                   viewMorePath="/section/steam-epic-region-change"
                   onAddToCart={addToCart}
                 />
+                <FAQSection />
               </>
             }
           />
@@ -135,24 +154,54 @@ const AuthenticatedApp = () => {
             }
           />
           <Route path="/section/:section" element={<CategoryGamesPage onAddToCart={addToCart} />} />
-          <Route path="/admin/orders" element={<AdminOrdersPage />} />
-          <Route path="/orders" element={<MyOrdersPage />} />
-          <Route path="/orders/:id" element={<OrderDetailPage />} />
-          <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
+          <Route
+            path="/admin/orders"
+            element={
+              <ProtectedRoute>
+                <AdminOrdersPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/orders"
+            element={
+              <ProtectedRoute>
+                <MyOrdersPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/orders/:id"
+            element={
+              <ProtectedRoute>
+                <OrderDetailPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/checkout/success"
+            element={
+              <ProtectedRoute>
+                <CheckoutSuccessPage />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/how-it-works" element={<HowItWorksPage />} />
           <Route path="/checkout/cancel" element={<CheckoutCancelPage />} />
+          <Route path="/faq" element={<FAQPage />} />
           <Route
             path="/cart"
             element={
-              <Cart
-                cartItems={cartItems}
-                onUpdateQuantity={updateQuantity}
-                onRemove={removeFromCart}
-              />
+              <ProtectedRoute>
+                <Cart
+                  cartItems={cartItems}
+                  onUpdateQuantity={updateQuantity}
+                  onRemove={removeFromCart}
+                  onClear={clearCart}
+                />
+              </ProtectedRoute>
             }
           />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
@@ -196,25 +245,13 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <Toaster position="top-right" />
-        <NewsletterPopup />
-        <Routes>
-          {/* Public routes */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          
-          {/* Protected routes */}
-          <Route
-            path="/*"
-            element={
-              <ErrorBoundary>
-                <ProtectedRoute>
-                  <AuthenticatedApp />
-                </ProtectedRoute>
-              </ErrorBoundary>
-            }
-          />
-        </Routes>
+        <ErrorBoundary>
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/*" element={<AuthenticatedApp />} />
+          </Routes>
+        </ErrorBoundary>
       </AuthProvider>
     </Router>
   );

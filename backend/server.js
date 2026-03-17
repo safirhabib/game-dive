@@ -91,7 +91,7 @@ const corsOptions = {
   origin: corsOrigins,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'ngrok-skip-browser-warning'],
   preflightContinue: false,
   exposedHeaders: ['Content-Length', 'X-Foo', 'X-Bar']
 };

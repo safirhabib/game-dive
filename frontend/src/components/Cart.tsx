@@ -23,6 +23,7 @@ interface CartProps {
   cartItems: CartItem[];
   onUpdateQuantity: (gameId: string, quantity: number) => void;
   onRemove: (gameId: string) => void;
+  onClear: () => void;
 }
 
 function safePrice(item: CartItem): number {
@@ -37,7 +38,7 @@ function savingsAmount(item: CartItem, quantity: number): number {
   return (orig - curr) * quantity;
 }
 
-function Cart({ cartItems: items, onUpdateQuantity, onRemove: onRemoveItem }: CartProps) {
+function Cart({ cartItems: items, onUpdateQuantity, onRemove: onRemoveItem, onClear }: CartProps) {
   const { token } = useAuth();
   const navigate = useNavigate();
   const paypalRef = useRef<HTMLDivElement>(null);
@@ -104,6 +105,7 @@ function Cart({ cartItems: items, onUpdateQuantity, onRemove: onRemoveItem }: Ca
               toast.error(result.message || 'Payment failed');
               return;
             }
+            onClear();
             navigate(`/checkout/success?session_id=${encodeURIComponent(data.orderID)}`);
           } catch (e) {
             toast.error('Payment failed');
@@ -151,9 +153,10 @@ function Cart({ cartItems: items, onUpdateQuantity, onRemove: onRemoveItem }: Ca
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <>
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
             {/* Cart Items */}
-            <div className="lg:col-span-2 space-y-4">
+            <div className="lg:col-span-3 space-y-4">
               {validItems.map((item) => (
                 <div
                   key={item.game._id}
@@ -236,8 +239,8 @@ function Cart({ cartItems: items, onUpdateQuantity, onRemove: onRemoveItem }: Ca
             </div>
 
             {/* Order Summary */}
-            <div className="lg:col-span-1">
-              <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50 h-fit">
+            <div className="lg:col-span-2">
+              <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50 h-fit lg:sticky lg:top-6">
                 <h2 className="text-xl font-bold text-white mb-6">Order Summary</h2>
 
                 <div className="space-y-4">
@@ -271,30 +274,8 @@ function Cart({ cartItems: items, onUpdateQuantity, onRemove: onRemoveItem }: Ca
                     <span>✔ Delivery within 24 hours</span>
                     <span>✔ Huge discounts compared to retail</span>
                     <span>✔ Dedicated support</span>
+                    <span>✔ Cancel with full refund within 48 hours</span>
                   </div>
-
-                  {!token ? (
-                    <p className="text-amber-400 text-sm py-2">Please log in to checkout.</p>
-                  ) : validItems.some((item) => item.game.isInStock === false) ? (
-                    <button
-                      type="button"
-                      disabled
-                      className="w-full font-bold py-4 px-6 rounded-xl bg-gray-700 text-gray-400 cursor-not-allowed"
-                    >
-                      Remove out of stock items to proceed
-                    </button>
-                  ) : !PAYPAL_CLIENT_ID ? (
-                    <p className="text-gray-400 text-sm py-2">PayPal is not configured.</p>
-                  ) : (
-                    <div className="min-h-[45px]">
-                      {!paypalReady && (
-                        <div className="flex items-center justify-center py-4">
-                          <Loader2 className="w-6 h-6 animate-spin text-purple-400" />
-                        </div>
-                      )}
-                      <div ref={paypalRef} />
-                    </div>
-                  )}
 
                   <p className="text-xs text-gray-500 text-center mt-4">
                     By placing your order, you agree to our Terms of Service and Privacy Policy.
@@ -303,6 +284,49 @@ function Cart({ cartItems: items, onUpdateQuantity, onRemove: onRemoveItem }: Ca
               </div>
             </div>
           </div>
+
+          {/* Payment */}
+          <div className="mt-10 flex justify-center">
+            <div className="w-full max-w-3xl bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">
+              <div className="flex items-center justify-between gap-4 mb-4">
+                <h2 className="text-xl font-bold text-white">Payment</h2>
+                <span className="text-sm text-gray-400">Total: ${total.toFixed(2)} CAD</span>
+              </div>
+
+              {!token ? (
+                <p className="text-amber-400 text-sm py-2">Please log in to checkout.</p>
+              ) : validItems.some((item) => item.game.isInStock === false) ? (
+                <button
+                  type="button"
+                  disabled
+                  className="w-full font-bold py-4 px-6 rounded-xl bg-gray-700 text-gray-400 cursor-not-allowed"
+                >
+                  Remove out of stock items to proceed
+                </button>
+              ) : !PAYPAL_CLIENT_ID ? (
+                <p className="text-gray-400 text-sm py-2">PayPal is not configured.</p>
+              ) : (
+                <div className="min-h-[45px]">
+                  <div className="mb-3 rounded-xl border border-gray-700/70 bg-gray-900/40 p-3">
+                    <p className="text-xs text-gray-300">
+                      Pay securely with PayPal or card. Card details are entered in PayPal&apos;s secure checkout.
+                    </p>
+                  </div>
+                  {!paypalReady && (
+                    <div className="flex items-center justify-center py-4">
+                      <Loader2 className="w-6 h-6 animate-spin text-purple-400" />
+                    </div>
+                  )}
+                  <div className="flex justify-center">
+                    <div className="w-full max-w-xl rounded-xl border border-gray-700/70 bg-white/5 p-4">
+                      <div ref={paypalRef} />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+          </>
         )}
       </div>
     </div>

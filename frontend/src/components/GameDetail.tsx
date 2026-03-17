@@ -133,13 +133,6 @@ export const GameDetail = ({ onAddToCart }: GameDetailProps) => {
 
             <div className="space-y-4 mb-8">
               <div className="space-y-2">
-                <h2 className="text-xl font-semibold">Description</h2>
-                <div className="prose prose-invert max-w-none">
-                  <div dangerouslySetInnerHTML={{ __html: game.fullDescription }}></div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
                 <h2 className="text-xl font-semibold">System Requirements</h2>
                 <div className="prose prose-invert max-w-none">
                   <div dangerouslySetInnerHTML={{ __html: game.systemRequirements }}></div>

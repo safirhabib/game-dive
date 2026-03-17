@@ -1,25 +1,31 @@
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { apiFetch } from '../utils/apiFetch';
+import { useAuth } from '../context/AuthContext';
 
 export const NewsletterPopup = () => {
+  const { user, token } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
 
-  // Show popup after 5 seconds of page load
+  // Show popup once, shortly after login (per user).
   useEffect(() => {
+    if (!token || !user) return;
+    const userKey = user?._id || user?.email || 'anon';
+    const shownKey = `newsletterPopupShown:${userKey}`;
+    const hasSubscribed = localStorage.getItem('newsletterSubscribed');
+    const alreadyShown = localStorage.getItem(shownKey);
+    if (hasSubscribed || alreadyShown) return;
+
     const timer = setTimeout(() => {
-      // Check if user has already subscribed (using localStorage)
-      const hasSubscribed = localStorage.getItem('newsletterSubscribed');
-      if (!hasSubscribed) {
-        setIsOpen(true);
-      }
-    }, 5000);
+      setIsOpen(true);
+      localStorage.setItem(shownKey, 'true');
+    }, 3500);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [token, user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
