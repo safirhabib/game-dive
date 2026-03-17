@@ -73,7 +73,7 @@ export default function WhatYouGetSection() {
 
             {/* floating badge */}
             <div className="absolute -top-4 -left-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-4 py-2 text-white shadow-xl animate-pulse">
-              <p className="text-sm font-bold">Save up to 70%</p>
+              <p className="text-sm font-bold">Save up to 95%</p>
             </div>
           </div>
 
